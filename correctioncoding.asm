@@ -8,6 +8,8 @@ push de 		;2-Multiply α power P with α power "list Generator" : The output is 
 push hl 		;2b-If added powers are >255 we apply modulo 255 (cf for)
  				;3-Obtain the exact value of each α power "anything" by seeking into Powers2 list (the result is stored in tmplist) (cf for 1 and 2)
 ld hl,Powers2 	;4-Substract the two lists (rem and tmplist) : we're working in GF(2^8) so addition = subtraction = xor (cf while2)
+ld a,l
+ld [P2addr],a
 ld de,MSG_REMAINDER
 .whilePNotFind 		;Stage 1
 ld a,[hl+] 			;Each number is represented one time in powers2 list :
@@ -15,7 +17,10 @@ ld b,a 				;Any number between 0 and 255 for index have another number between 0
 ld a,[de]
 cp b
 jr nz,.endif1
+ld a,[P2addr]
+ld d,a
 ld a,l
+sub d       ;This list index is calculated by subtracting its current address with its start address (P2addr)
 dec a
 ld [P],a
 jr .endPFind
@@ -32,7 +37,7 @@ ld c,a
 ld a,[hl+]
 add c
 jr nc,.lessThan255 ;Stage 2-b
-sub 255 			
+sub 255
 cp 255
 jr nz,.lessThan255
 sub 255
@@ -45,19 +50,24 @@ jr nz,.for
 ld bc,TMP_LIST 	;Stage 3
 .for1
 ld hl,Powers2
+ld a,l
+ld [P2addr],a
 .for2
-ld a,[bc]
+ld a,[P2addr]
 ld d,a
 ld a,l
+sub d
+ld d,a
+ld a,[bc]
 cp d
 jr nz,.endiffor2false
 ld a,[hl]
 ld [bc],a
 jr .endiffor2true
 .endiffor2false
-inc l
-ld a,l
-cp 0
+inc hl
+ld a,[P2addr]
+cp l
 jr nz,.for2
 .endiffor2true
 inc bc

@@ -1,6 +1,6 @@
 SECTION "Game code", ROM0
 
-initiateArg: MACRO
+initiateArg: MACRO 	;initiate arguments for function in spritegenerator
 	ld a,\1
 	ld [row],a
 	ld a,\2
@@ -20,14 +20,14 @@ ENDM
 begin:
 ld hl,Message 		;The address of the message (which is in ascii)
 ld de,MSG_ENCODED			;Will contain the encoded message
-ld a,4				
+ld a,4
 call stringSize		;Calculate size of message. Return that value in c (takes the label "Message" as message start)
 ld b,c
 call encodeRightLeft	;Since the message starts and ends with 4 bits (%0100 and %0000), we need to shift the further bits.
 ld [de],a 				;Takes a for MSB and b for LSB. Returns a
 ld a,[hl]
 ld b,a
-call stringSize 	
+call stringSize
 ld a,c
 call encodeRightLeft
 inc de
@@ -41,7 +41,7 @@ ld b,a
 ld a,c
 call encodeRightLeft
 ld [de],a
-cp 0 				
+cp 0
 jr nz,.loopEncode
 
 ;The message must be 152 bits long (1-L qr code) so we add 236 and 17
@@ -78,7 +78,7 @@ jr nz,.while
 call correctionCoding
 ld hl,MSG_REMAINDER+1
 ld bc,MSG_REMAINDER
-.offsetRemainder
+.offsetRemainder 		;discard the first term of remainder
 ld a,[hl+]
 ld [bc],a
 inc bc
@@ -99,7 +99,7 @@ jr nz,.loadECcodes
 ld a,%10000010
 ld [$FF40],a
 
-ld bc,SPRITE_LOAD 	;adresse départ des tiles générées
+ld bc,SPRITE_LOAD 	;start address of generated tiles
 
 	initiateArg 14,14,0,0,6,6,82
 	call createSpriteQR
@@ -126,7 +126,7 @@ ld bc,SPRITE_LOAD 	;adresse départ des tiles générées
 	call createSpriteQR
 
 
-
+;The part below needs to be improved a lot (it loads tiles VRAM and tiles info into OAM)
 .wait:
 ld a,[$FF44]
 cp 145
@@ -273,4 +273,3 @@ inc d
 ld a,d
 cp 14
 jr nz,.loopOAMtroisiemeedition
-
