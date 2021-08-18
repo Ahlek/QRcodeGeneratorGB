@@ -16,17 +16,13 @@ ld a,[hl+] 			;Each number is represented one time in powers2 list :
 ld b,a 				;Any number between 0 and 255 for index have another number between 0 and 255 in the list
 ld a,[de]
 cp b
-jr nz,.endif1
+jr nz,.whilePNotFind ;Since each number is represented, no need to have a counter for this while (maybe prevent bugs ?)
 ld a,[P2addr]
-ld d,a
+ld b,a
 ld a,l
-sub d       ;This list index is calculated by subtracting its current address with its start address (P2addr)
+sub b       ;This list index is calculated by subtracting its current address with its start address (P2addr)
 dec a
 ld [P],a
-jr .endPFind
-.endif1
-jr .whilePNotFind 	;Since each number is represented, no need to have a counter for this while (maybe prevent bugs ?)
-.endPFind
 
 ld b,8
 ld hl,Generator ;Stage 2
@@ -47,6 +43,7 @@ inc de
 dec b
 jr nz,.for
 
+ld e,8
 ld bc,TMP_LIST 	;Stage 3
 .for1
 ld hl,Powers2
@@ -74,6 +71,7 @@ inc bc
 dec e
 jr nz,.for1
 
+ld e,8
 ld hl,TMP_LIST 	;Stage 4
 ld bc,MSG_REMAINDER
 .while2
@@ -83,8 +81,7 @@ ld a,[bc]
 xor d
 ld [bc],a
 inc bc
-ld a,l
-cp 8
+dec e
 jr nz,.while2
 
 pop hl

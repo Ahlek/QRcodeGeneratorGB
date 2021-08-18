@@ -4,9 +4,9 @@ createSpriteQR:
 ;This subprogram create one tile necessary for the qr code
 ;Basically, I divided the qr code in tiny rectangles (not necessarly a complete tile)
 
-ld a,8 			;count of bigloop iteration (makes each line of a tile)
+ld a,0 			;count of bigloop iteration (makes each line of a tile)
 
-.bigloop 		
+.bigloop
 
 ld [bigcount],a
 
@@ -33,16 +33,14 @@ jr .endifpair
 ld a,$FE 		;if column/2 is odd, the qr pattern goes down, so we will add 2 (or sub -2 which is $FE here)
 ld [distanceY],a
 .endifpair
-;Note : I think distanceY calculs could be performed outside bigloop
 
 
 xor a
-ld [tmpRow],a ;must be set it to 0 before entering loop (contain the ongoing row)
+ld [tmpRow],a ;must be set to 0 before entering loop (contain the ongoing row)
 
-ld a,8 	;count of loop iteration (makes each column of a line)
-;Note : the count starts at 8, but may be easier to start it at 0 (for some calculations)
+ld a,0 	;count of loop iteration (makes each column of a line)
 
-.loop 	
+.loop
 
 ld hl,MSG_ENCODED 	;data start
 ld [count],a 	;loop count
@@ -50,20 +48,12 @@ ld [count],a 	;loop count
 ld a,[offsetXstart] ;check if we must skip a column at the start (and jump if so)
 ld d,a
 ld a,[count]
-ld e,a
-xor a
-sub e
-add 8
 cp d
 jp c,.skipall
 
 ld a,[offsetXend] ;check if we must skip a column at the end (and jump if so)
 ld d,a
 ld a,[count]
-ld e,a
-xor a
-sub e
-add 8
 cp d
 jp nc,.skipallspecial
 .notskipall
@@ -102,10 +92,6 @@ and [hl] 	;get the right bit in right byte
 
 ld e,a 		;this part of code is made to get the bit in its start position (in hl) to its final position (in tmpRow)
 ld a,[count];the final location of bit
-ld d,a
-xor a
-sub d
-add 8
 ld d,a
 ld a,[tmpSetAtLocation]
 ld l,a 						;l will be usefull for masking
@@ -155,23 +141,16 @@ inc a
 ld [columntmp],a
 
 ld a,[count]
-dec a
+inc a
+cp 8
 jp nz,.loop 	;--------------------------------------------------------------------------------------------
 
 ld a,[bigcount] ;determine if we must skip a line or not
-ld d,a
-xor a
-sub d
-add 8
 ld d,a
 ld a,[offsetYend]
 cp d
 jr c,.thenskip
 ld a,[bigcount]
-ld d,a
-xor a
-sub d
-add 8
 ld d,a
 ld a,[offsetYstart]
 cp d
@@ -203,7 +182,7 @@ ld [bitLocationtmp],a
 ld [bitLocation],a
 .endifskip
 
-ld a,8
+ld a,0
 ld [count],a
 
 
@@ -212,7 +191,8 @@ inc a
 ld [row],a
 
 ld a,[bigcount]
-dec a
+inc a
+cp 8
 jp nz,.bigloop 	;-----------------------------------------------------------------------------------------
 
 ret
@@ -297,7 +277,7 @@ sub b
 
 pop bc
 
-ret 
+ret
 
 floorDistance:
 push bc

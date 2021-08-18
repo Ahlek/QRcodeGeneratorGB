@@ -100,7 +100,7 @@ WINDOW_MAPDATA_START        EQU $9C00 ; up to $9FFF
 SAVEDATA_START     EQU $A000 ; up to $BFFF
 
 RAM_START          EQU $C000 ; up to $E000, only write to data after USER_RAM_START as GingerBread uses some RAM before this for sprites etc.
-SPRITES_START      EQU $C100 ; up to $C1A0 
+SPRITES_START      EQU $C100 ; up to $C1A0
 USER_RAM_START     EQU $C200 ; up to $E000
 
 HRAM_START         EQU $F800 ; up to $FFFE
@@ -108,7 +108,7 @@ OAMRAM_START       EQU $FE00 ; up to $FE9F
 AUD3WAVERAM_START  EQU $FF30 ; $FF30-$FF3F
 
 DMACODE_START   EQU $FF80
-SPRITES_LENGTH  EQU $AF ;MODIFIÉ de $A0 à $AF 
+SPRITES_LENGTH  EQU $AF ;MODIFIÉ de $A0 à $AF
 
 STATF_LYC     EQU  %01000000 ; LYCEQULY Coincidence (Selectable)
 STATF_MODE10  EQU  %00100000 ; Mode 10
@@ -1217,7 +1217,6 @@ SECTION	"Timer overflow interrupt",ROM0[$0050]
 SECTION	"Serial interrupt",ROM0[$0058]
     reti
 SECTION	"p1234 interrupt",ROM0[$0060]
-    ;call Joypad         ;MODIFIÉ DE POUR PERMETTRE UN APPEL
     reti
 
 ; These are the first lines the boot loader will run.
@@ -1324,7 +1323,7 @@ ENDC
     call StopLCD
     call initdma
 
-    ld	a, IEF_VBLANK ; We only want vblank interrupts (for updating sprites)
+    ld	a, %00010001;IEF_VBLANK ; We only want vblank interrupts (for updating sprites)
     ld	[rIE], a
 
     ei
@@ -1353,4 +1352,3 @@ ENDC
     ld [SCROLL_Y], a
 
     jp begin ; GingerBread assumes that your game has this label somewhere where your own code should start
-

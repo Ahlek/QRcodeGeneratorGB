@@ -4,7 +4,7 @@ stringSize:
 push af
 push hl
 
-ld hl,Message
+ld hl,MESSAGE
 ld c,0
 .while
 inc c
@@ -54,4 +54,4 @@ jr c,.endifmod
 jr .mod
 .endifmod
 
-ret 
+ret

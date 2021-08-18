@@ -17,8 +17,39 @@ initiateArg: MACRO 	;initiate arguments for function in spritegenerator
 	ld [bitLocation],a
 ENDM
 
-begin:
-ld hl,Message 		;The address of the message (which is in ascii)
+generationStart:
+.waitVRAM
+		ldh a, [$FF41]
+		and %00000010
+		jr nz, .waitVRAM
+
+		ld bc,0
+		.tileBG1
+		ld e,$20
+		ld hl,$9841
+		add hl,bc
+		push bc
+		ld c,0
+		.tileBG2
+		ld a,e
+		ld [hl],a
+		push bc
+		ld bc,$40
+		add hl,bc
+		pop bc
+		inc c
+		ld a,c
+		cp 6
+		jr nz,.tileBG2
+		pop bc
+		inc bc
+		inc bc
+		ld a,c
+		cp 32
+		jr nz,.tileBG1
+
+
+ld hl,MESSAGE 		;The address of the message (which is in ascii)
 ld de,MSG_ENCODED			;Will contain the encoded message
 ld a,4
 call stringSize		;Calculate size of message. Return that value in c (takes the label "Message" as message start)
@@ -29,6 +60,7 @@ ld a,[hl]
 ld b,a
 call stringSize
 ld a,c
+ld [offsetMsg],a
 call encodeRightLeft
 inc de
 ld [de],a
@@ -41,8 +73,13 @@ ld b,a
 ld a,c
 call encodeRightLeft
 ld [de],a
-cp 0
-jr nz,.loopEncode
+ld a,[offsetMsg]
+dec a
+ld [offsetMsg],a
+cp $FF
+jr z,.endLoop
+jr .loopEncode
+.endLoop
 
 ;The message must be 152 bits long (1-L qr code) so we add 236 and 17
 dec e
@@ -72,32 +109,47 @@ ld hl,MSG_ENCODED	;Message String
 ld a,[hl+]
 ld [bc],a
 inc bc
-cp 0
+dec d
 jr nz,.while
+ld d,19
 .stepECcoding
 call correctionCoding
+
+jr .skip
+.moreThan1
+ld a,d
+cp 1
+jr z,.itsatrap
+dec d
+.skip
 ld hl,MSG_REMAINDER+1
 ld bc,MSG_REMAINDER
+ld e,20
 .offsetRemainder 		;discard the first term of remainder
 ld a,[hl+]
 ld [bc],a
 inc bc
-cp 0
+dec e
 jr nz,.offsetRemainder
+ld a,[MSG_REMAINDER]
+and a
+jr z,.moreThan1
+.itsatrap
 dec d
 jr nz,.stepECcoding
 
 ld hl,MSG_ENCODED+19
 ld bc,MSG_REMAINDER
+ld d,9
 .loadECcodes
 ld a,[bc]
 inc bc
 ld [hl+],a
-cp 0
+dec d
 jr nz,.loadECcodes
 
 ld a,%10000010
-ld [$FF40],a
+ld [$FF40],a ;Peut être enlever ce truc ?
 
 ld bc,SPRITE_LOAD 	;start address of generated tiles
 
@@ -273,3 +325,21 @@ inc d
 ld a,d
 cp 14
 jr nz,.loopOAMtroisiemeedition
+
+.lockup
+;call read_pad
+;ld a,[cur_keys]
+;bit 3,a
+;jr z,.noStart
+;ld bc,$2000
+;.waitVRAM1
+;    ldh a, [$FF41]
+;    and %00000010
+;    jr nz, .waitVRAM1
+;dec bc
+;ld a,b
+;or c
+;jr nz,.waitVRAM1
+;jp begin
+;.noStart
+jr .lockup
