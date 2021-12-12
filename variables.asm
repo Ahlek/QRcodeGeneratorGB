@@ -32,12 +32,12 @@ cursorAddrY: ds 1
 cursorAddrX: ds 1
 cur_keys: ds 1
 new_keys: ds 1
-Stringsize: ds 1
 offsetMsg: ds 1
 lastcharacter: ds 1
+countCursor: ds 1
 
-SECTION "QR Code Sprites",ROM0
-Tiles:
+SECTION "QR Code Tiles",ROM0
+ConstantTiles:
 db $FE,$FE,$82,$82,$BA,$BA,$BA,$BA,$BA,$BA,$82,$82,$FE,$FE,$00,$00 ;Finder Pattern up left
 db $00,$00,$E6,$E6,$00,$00,$02,$02,$00,$00,$02,$02,$00,$00,$00,$00 ;Version string (0..6) and timing pattern left
 db $40,$40,$40,$40,$00,$00,$00,$00,$40,$40,$40,$40,$54,$54,$40,$40 ;Version string (8..14) and timing pattern up
@@ -45,8 +45,10 @@ db $40,$40,$42,$42,$00,$00,$00,$00,$00,$00,$00,$00,$40,$40,$00,$00 ;Version stri
 db $00,$00,$40,$40,$00,$00,$00,$00,$40,$40,$40,$40,$40,$40,$00,$00 ;Version string down left (0..6)
 db $00,$00,$E6,$E6,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00 ;Version string up right (8..14)
 
+SECTION "keyboard tiles",ROM0
+keyboardTile:
+db $00,$00,$00,$00,$CC,$33,$CC,$33,$33,$CC,$33,$CC,$00,$00,$00,$00
 SECTION "Font", ROM0
-
 FontTiles:
 INCBIN "font.chr"
 FontTilesEnd:

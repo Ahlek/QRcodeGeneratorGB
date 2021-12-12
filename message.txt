@@ -1,1 +1,1 @@
-db "0", 0
+db "The cake is a lie", 0

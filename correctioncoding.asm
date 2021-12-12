@@ -24,7 +24,7 @@ sub b       ;This list index is calculated by subtracting its current address wi
 dec a
 ld [P],a
 
-ld b,8
+ld b,GENERATOR_LENGTH
 ld hl,Generator ;Stage 2
 ld de,TMP_LIST		;tmplist
 .for
@@ -43,7 +43,7 @@ inc de
 dec b
 jr nz,.for
 
-ld e,8
+ld e,GENERATOR_LENGTH
 ld bc,TMP_LIST 	;Stage 3
 .for1
 ld hl,Powers2
@@ -71,7 +71,7 @@ inc bc
 dec e
 jr nz,.for1
 
-ld e,8
+ld e,GENERATOR_LENGTH
 ld hl,TMP_LIST 	;Stage 4
 ld bc,MSG_REMAINDER
 .while2

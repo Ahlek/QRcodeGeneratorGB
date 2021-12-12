@@ -55,3 +55,35 @@ jr .mod
 .endifmod
 
 ret
+
+lowbeep:
+  call   setsnd
+  ld     a,%00000000
+  ldh    [$13],a
+  ld     a,%11000111
+  ldh    [$14],a
+  ret
+
+
+hibeep:
+  call   setsnd
+  ld     a,%11000000
+  ldh    [$13],a
+  ld     a,%11000111
+  ldh    [$14],a
+  ret
+
+setsnd:
+  ld     a,%10000000
+  ldh    [$26],a
+
+  ld     a,%01110111
+  ldh    [$24],a
+  ld     a,%00010001
+  ldh    [$25],a
+
+  ld     a,%10111000
+  ldh    [$11],a
+  ld     a,%11110000
+  ldh    [$12],a
+  ret
