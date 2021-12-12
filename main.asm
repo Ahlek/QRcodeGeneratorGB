@@ -20,9 +20,9 @@ P1F_NONE     EQU $30
 P1F_BUTTONS  EQU $10
 P1F_DPAD     EQU $20
 
-INCLUDE "input.asm"
+INCLUDE "main_input.asm"
 
-INCLUDE "begin.asm"
+INCLUDE "main_generator.asm"
 
 SECTION "Message",ROM0
 Message:
