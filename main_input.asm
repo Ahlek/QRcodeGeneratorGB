@@ -1,20 +1,50 @@
 SECTION "Input",ROM0
 
-begin:
-
-;LOAD TILES INTO VRAM (screen is off)
-
-  ld hl, $9000    ;loads font.chr
-  ld de, FontTiles
-  ld bc, FontTilesEnd - FontTiles
-.copyFont
+copyFontM: MACRO
+.copyFont\@
   ld a, [de]
   ld [hl+], a
   inc de
   dec bc
   ld a, b
   or c
-  jr nz, .copyFont
+  jr nz, .copyFont\@
+ENDM
+
+begin:
+
+;LOAD TILES INTO VRAM (screen is off)
+  ld a,7
+  ld [$FF4B],a ;place window x
+  ld a,103
+  ld [$FF4A],a ;place window y
+
+  ld a, %11100100 ;load palette
+  ld [$FF47], a
+
+  ld a, %11100011 ;starts screen
+  ld [$FF40], a
+restart:
+
+ld hl, $9200
+ld de, FontTiles+$200
+.loopFont ;loads font.chr
+call waitVblank
+  ld bc, $40
+  .copyFont
+    ld a, [de]
+    ld [hl+], a
+    inc de
+    dec bc
+    ld a, b
+    or c
+    jr nz, .copyFont
+
+  ld a,h
+  cp $98
+  jr nz,.loopFont
+
+call waitVblank
 
   ld hl, $8000  ;loads the last character of font.chr (cursor)
   ld de, FontTilesEnd-16
@@ -25,6 +55,8 @@ begin:
   inc de
   dec b
   jr nz, .copyFontBis
+
+call waitVblank
 
   ld hl,$9010   ;loads tiny squares strip that frame keyboard
   ld de,keyboardTile
@@ -37,6 +69,8 @@ begin:
   jr nz,.copySquare
 
 ;LOAD PARTS OF KEYBOARD
+
+call waitVblank
 
   ld hl,$9800   ;loading top squares strip
   ld a,$01
@@ -54,9 +88,12 @@ begin:
   dec b
   jr nz,.squareLine2
 
+call waitVblank
+
   ld bc,0   ;loading keyboard's letters (column by column)
   ld d,0
 .tileBG1  ;makes each lines
+  call waitVblank
   ld e,$20  ;tiles indicator
   ld a,d    ;go to the next letter to start column
   add e
@@ -126,18 +163,6 @@ begin:
   xor a
   ld [hl+],a
   ld [hl+],a
-
-
-  ld a,7
-  ld [$FF4B],a ;place window x
-  ld a,103
-  ld [$FF4A],a ;place window y
-
-  ld a, %11100100 ;load palette
-  ld [$FF47], a
-
-  ld a, %11100011 ;starts screen
-  ld [$FF40], a
 
   call EnableAudio
 

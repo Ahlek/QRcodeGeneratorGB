@@ -132,9 +132,8 @@ jr nz,.loadECcodes
 
 ;TILES GENERATION
 
-;ld a,%10000010
-;ld [$FF40],a 		;was useful for testing ECCoding (without the keyboard)
-
+ld a,%10000010
+ld [$FF40],a 		;was useful for testing ECCoding (without the keyboard)
 ld bc,TILES_LOAD 	;start address of generated tiles
 
 	initiateArg 14,14,0,0,6,6,82
@@ -164,10 +163,7 @@ ld bc,TILES_LOAD 	;start address of generated tiles
 ;PLACEMENT OF TILES IN OAM
 
 ;The part below needs to be improved a lot (it loads tiles VRAM and tiles info into OAM)
-.wait:
-ld a,[$FF44]
-cp 145
-jr nz, .wait
+call waitVblank
 
 ld d,$60
 ld hl,ConstantTiles
@@ -179,10 +175,7 @@ inc bc
 dec d
 jr nz,.loopvram
 
-.wait2:
-ld a,[$FF44]
-cp 145
-jr nz, .wait2
+call waitVblank
 
 ld d,$60
 ld hl,TILES_LOAD
@@ -194,10 +187,7 @@ inc bc
 dec d
 jr nz,.loopvram2
 
-.wait3:
-ld a,[$FF44]
-cp 145
-jr nz, .wait3
+call waitVblank
 
 ld d,$20
 .loopvram3
@@ -208,8 +198,8 @@ dec d
 jr nz,.loopvram3
 
 ld hl,$C100
-ld b,$19 ;y
-ld c,$19 ;x
+ld b,$3E ;y (19)
+ld c,$46 ;x
 ld d,0   ;tile index
 ld e,0   ;loop index
 .loopOAM2
@@ -257,16 +247,16 @@ ld d,0
 .not0_1
 
 ld a,b
-cp $2E
+cp $53
 jr c,.loopOAM1
-ld b,$19
+ld b,$3E
 ld a,c
-cp $2E
+cp $5B
 jr c,.loopOAM2
 
 ld e,7
-ld b,$20
-ld c,$27
+ld b,$45
+ld c,$54
 .loopOAMbis
 ld a,b
 ld [hl+],a
@@ -281,7 +271,7 @@ ld a,b
 add e
 ld b,a
 ld a,c
-cp $2E
+cp $5B
 jr nz,.not_7
 ld e,$F9
 .not_7
@@ -291,12 +281,12 @@ ld c,a
 
 inc d
 
-cp $19
+cp $46
 jr nz,.loopOAMbis
 
 
-ld b,$27
-ld c,$27
+ld b,$4C
+ld c,$54
 .loopOAMtroisiemeedition
 ld a,b
 ld [hl+],a
@@ -311,24 +301,29 @@ ld a,d
 cp 14
 jr nz,.loopOAMtroisiemeedition
 
+;call DisplayQR
+
 .lockup
-;call read_pad
-;ld a,[cur_keys]
-;bit 3,a
-;jr z,.noStart
-;ld bc,$2000
-;.waitVRAM1
-;    ldh a, [$FF41]
-;    and %00000010
-;    jr nz, .waitVRAM1
-;dec bc
-;ld a,b
-;or c
-;jr nz,.waitVRAM1
-;ld hl,$8000
-;ld bc, $1FFF
-;xor a
-;call mSetVRAM
-;jp begin
-;.noStart
+call read_pad
+ld a,[cur_keys]
+bit 3,a
+jr z,.noStart
+ld bc,$2000
+.waitVRAM1
+    ldh a, [$FF41]
+    and %00000010
+    jr nz, .waitVRAM1
+dec bc
+ld a,b
+or c
+jr nz,.waitVRAM1
+ld hl,$8000
+ld bc, $1FFF
+xor a
+call mSetVRAM
+ld hl,$C100
+ld bc,$40
+call mSet
+jp restart
+.noStart
 jr .lockup

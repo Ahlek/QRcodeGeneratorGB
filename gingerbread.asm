@@ -29,7 +29,7 @@ ROM_SIZE EQU 0
 ENDC
 
 IF !DEF(RAM_SIZE)
-RAM_SIZE EQU 1
+RAM_SIZE EQU 0
 ENDC
 
 SECTION "header",ROM0[$0104]
@@ -47,7 +47,7 @@ ENDR
     DB 	H_GBC_CODE          ; $143 - GBC functionality (0 for no, $80 for "black cart" and $C0 for GBC only)
     DB 	0,0                 ; $144 - Licensee code (not important)
     DB 	H_SGB_CODE          ; $146 - SGB Support indicator (0 means no support, 3 means there is SGB support in the game)
-    DB 	$1B                 ; $147 - Cart type ($1B means MBC5 with RAM and battery save)
+    DB 	$19                 ; $147 - Cart type ($1B means MBC5 with RAM and battery save)
     DB 	ROM_SIZE            ; $148 - ROM Size, 0 means 32 kB, 1 means 64 kB and so on up to 2 MB
     DB	RAM_SIZE            ; $149 - RAM Size, 0 means no RAM, 1 means 2 kB, 2 -> 8 kB, 3 -> 32 kB, 4 -> 128 kB
     DB 	1                   ; $14a - Destination code (0 means Japan, 1 mean non-Japan, doesn't matter)

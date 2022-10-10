@@ -1,5 +1,11 @@
 SECTION "SubFunctions",ROM0
 
+waitVblank:
+ld a,[$FF44]
+cp 145
+jr nz, waitVblank
+ret
+
 stringSize:
 push af
 push hl

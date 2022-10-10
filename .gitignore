@@ -1,0 +1,5 @@
+*.bat
+*.o
+*.gb
+*.sav
+displayQR.asm
