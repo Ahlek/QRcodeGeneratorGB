@@ -132,8 +132,10 @@ jr nz,.loadECcodes
 
 ;TILES GENERATION
 
-ld a,%10000010
-ld [$FF40],a 		;was useful for testing ECCoding (without the keyboard)
+;ld a,%10000010
+;ld [$FF40],a 		;was useful for testing ECCoding (without the keyboard)
+
+
 ld bc,TILES_LOAD 	;start address of generated tiles
 
 	initiateArg 14,14,0,0,6,6,82

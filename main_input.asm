@@ -80,6 +80,8 @@ call waitVblank
   dec b
   jr nz,.squareLine1
 
+call waitVblank
+
   ld hl,$9C40 ;loading the bottom squares strip
   ld a,$01
   ld b,$20
@@ -87,8 +89,6 @@ call waitVblank
   ld [hl+],a
   dec b
   jr nz,.squareLine2
-
-call waitVblank
 
   ld bc,0   ;loading keyboard's letters (column by column)
   ld d,0
